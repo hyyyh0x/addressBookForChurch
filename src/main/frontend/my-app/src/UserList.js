@@ -92,23 +92,23 @@ function UserList() {
   };
 
   const handleDownload = async () => {
-     try {
-       const response = await axios.get('/download', {
-         responseType: 'arraybuffer', // Ensure binary data is received
-       });
+       try {
+         const response = await axios.get('/download', {
+           responseType: 'arraybuffer', // Ensure binary data is received
+         });
 
-       // Create a Blob from the response data
-       const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+         // Create a Blob from the response data as a Word document
+         const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 
-       // Create a link element to trigger the download
-       const link = document.createElement('a');
-       link.href = URL.createObjectURL(file);
-       link.download = 'UsersData.xlsx';  // Name the file with .xlsx extension for Excel
-       link.click();  // Trigger the download
-     } catch (error) {
-       console.error('Error downloading file:', error);
-     }
-   };
+         // Create a link element to trigger the download
+         const link = document.createElement('a');
+         link.href = URL.createObjectURL(file);
+         link.download = 'UsersData.docx';  // Name the file with .docx extension for Word
+         link.click();  // Trigger the download
+       } catch (error) {
+         console.error('Error downloading file:', error);
+       }
+  };
 
   const handleUpdateUser = async () => {
     try {

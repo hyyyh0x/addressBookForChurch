@@ -208,7 +208,7 @@ function UserList() {
           <input
             type="text"
             id="name"
-            name="이름"
+            name="name"
             placeholder="이름"
             value={newUser.name}
             onChange={handleInputChange}
@@ -217,7 +217,7 @@ function UserList() {
           <input
             type="text"
             id="phone"
-            name="전화번호"
+            name="phone"
             placeholder="전화번호 (e.g., 010-1234-5678)"
             value={newUser.phone}  // Prepopulate with current phone
             onChange={handleInputChange}
@@ -226,7 +226,7 @@ function UserList() {
           <input
             type="text"
             id="prayerNote"
-            name="기도 제목"
+            name="prayerNote"
             placeholder="기도 제목"
             value={newUser.prayerNote}
             onChange={handleInputChange}

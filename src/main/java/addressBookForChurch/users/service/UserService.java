@@ -5,7 +5,6 @@ import addressBookForChurch.users.entity.Users;
 import addressBookForChurch.users.repository.UsersRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,9 +12,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UsersRepository userRepository;
-
-    @Value("${admin-phone}")
-    private String adminPhone;
 
     public List<UserDTO> getAllUsers() {
         List<Users> users = userRepository.findAll();

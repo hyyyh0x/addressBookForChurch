@@ -15,7 +15,7 @@ public class CorsConfig {
     @Primary
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow frontend origin
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080")); // Allow frontend origin
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers)

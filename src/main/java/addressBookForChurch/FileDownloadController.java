@@ -2,14 +2,12 @@ package addressBookForChurch;
 
 import addressBookForChurch.users.entity.Users;
 import addressBookForChurch.users.repository.UsersRepository;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,38 +23,54 @@ public class FileDownloadController {
     private final UsersRepository usersRepository;
 
     @GetMapping
-    public ResponseEntity<byte[]> downloadUsersDoc() throws IOException, InvalidFormatException {
-        // DOCX 파일 생성
+    public ResponseEntity<byte[]> downloadUsersExcel() throws IOException {
+        // Create Excel workbook and sheet
         List<Users> users = usersRepository.findAll();
-        XWPFDocument document = new XWPFDocument();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("UsersData");
 
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Name");
+        headerRow.createCell(1).setCellValue("Phone");
+        headerRow.createCell(2).setCellValue("Prayer Note");
+        headerRow.createCell(3).setCellValue("Picture");
+
+        // Populate data rows
+        int rowNum = 1;
         for (Users user : users) {
-            var paragraph = document.createParagraph();
-            var run = paragraph.createRun();
-            run.setText("Name: " + user.getName());
-            run.addBreak();
-            run.setText("Phone: " + user.getPhone());
-            run.addBreak();
-            run.setText("Prayer Note: " + user.getPrayerNote());
-            run.addBreak();
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(user.getName());
+            row.createCell(1).setCellValue(user.getPhone());
+            row.createCell(2).setCellValue(user.getPrayerNote());
+
+            // Add picture if available
             if (user.getPicture() != null) {
-                var imageRun = document.createParagraph().createRun();
-                imageRun.addPicture(new ByteArrayInputStream(user.getPicture()),
-                    XWPFDocument.PICTURE_TYPE_JPEG,
-                    "picture.jpg",
-                    Units.toEMU(150),
-                    Units.toEMU(150));
+                int pictureIndex = workbook.addPicture(user.getPicture(), Workbook.PICTURE_TYPE_JPEG);
+                CreationHelper helper = workbook.getCreationHelper();
+                Drawing<?> drawing = sheet.createDrawingPatriarch();
+                ClientAnchor anchor = helper.createClientAnchor();
+                anchor.setCol1(3);  // The column where the picture will be inserted
+                anchor.setRow1(row.getRowNum());  // The row where the picture will be inserted
+                Picture picture = drawing.createPicture(anchor, pictureIndex);
+                picture.resize(0.5); // Resize the image to fit cell dimensions
             }
-            run.addBreak();
         }
 
-        document.write(out);
-        document.close();
+        // Adjust column widths
+        sheet.setColumnWidth(0, 5000);
+        sheet.setColumnWidth(1, 5000);
+        sheet.setColumnWidth(2, 10000);
+        sheet.setColumnWidth(3, 8000);
 
-        // 파일 다운로드를 위한 HTTP 응답 생성
+        // Write to ByteArrayOutputStream
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        // Prepare file for download
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UsersData.docx")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UsersData.xlsx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(out.toByteArray());
     }

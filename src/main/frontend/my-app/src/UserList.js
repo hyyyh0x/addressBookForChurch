@@ -7,10 +7,12 @@ function UserList() {
   const [showUserList, setShowUserList] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [enteredPassword, setEnteredPassword] = useState(''); // To store the entered password
+  const [adminPassword, setAdminPassword] = useState('');
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+      loadUsers();
+      fetchAdminPassword();
+    }, []);
 
   const loadUsers = async () => {
     try {
@@ -21,6 +23,15 @@ function UserList() {
       console.error('Error fetching users:', error);
     }
   };
+
+  const fetchAdminPassword = async () => {
+      try {
+        const response = await axios.get('/users/admin');
+        setAdminPassword(response.data.adminPassword);
+      } catch (error) {
+        console.error('Error fetching admin password:', error);
+      }
+    };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,14 +64,14 @@ function UserList() {
       setErrorMessage('');
     } catch (error) {
       console.error('Error saving user:', error);
-      setErrorMessage('Failed to save user. Please check the details and try again.');
+      setErrorMessage('저장에 실패했습니다. 정보를 전부 입력했는지 확인해주세요.');
     }
   };
 
   const convertFileToBytes = (file) => {
     return new Promise((resolve, reject) => {
       if (!file) {
-        reject("No file provided");
+        reject("제공된 파일이 없습니다.");
         return;
       }
 
@@ -73,7 +84,7 @@ function UserList() {
       });
 
       reader.addEventListener("error", () => {
-        reject("Failed to read file");
+        reject("파일을 읽어오는 데에 실패했습니다.");
       });
 
       reader.readAsArrayBuffer(file);
@@ -81,23 +92,23 @@ function UserList() {
   };
 
   const handleDownload = async () => {
-      try {
-        const response = await axios.get('/download', {
-          responseType: 'arraybuffer', // Important to get the binary file
-        });
+     try {
+       const response = await axios.get('/download', {
+         responseType: 'arraybuffer', // Ensure binary data is received
+       });
 
-        // Create a Blob from the response data
-        const file = new Blob([response.data], { type: 'application/octet-stream' });
+       // Create a Blob from the response data
+       const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-        // Create a link element to trigger the download
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(file);
-        link.download = 'UsersData.docx';  // Name of the file to be downloaded
-        link.click();  // Trigger the download
-      } catch (error) {
-        console.error('Error downloading file:', error);
-      }
-    };
+       // Create a link element to trigger the download
+       const link = document.createElement('a');
+       link.href = URL.createObjectURL(file);
+       link.download = 'UsersData.xlsx';  // Name the file with .xlsx extension for Excel
+       link.click();  // Trigger the download
+     } catch (error) {
+       console.error('Error downloading file:', error);
+     }
+   };
 
   const handleUpdateUser = async () => {
     try {
@@ -128,22 +139,22 @@ function UserList() {
       setErrorMessage(''); // Clear error message
     } catch (error) {
       console.error('Error updating user:', error);
-      setErrorMessage('Failed to update user. Please check the details and try again.');
+      setErrorMessage('업데이트에 실패했습니다. 정보를 확인해주세요.');
     }
   };
 
   const handleEditUser = (user) => {
     // Prompt for password verification
-    const enteredPassword = prompt('Please enter your current password:'); // Use prompt or an input field
+    const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.'); // Use prompt or an input field
 
     // Check if the entered password matches the current user's password
-    if (enteredPassword === user.phone) {
+    if (enteredPassword === user.phone || enteredPassword === adminPassword) {
       // If password matches, proceed to set up the form for editing
       setNewUser({
         id: user.id,
         name: user.name,
         phone: user.phone,  // Use current phone as placeholder
-        prayerNote: user.prayerNote || "None", // Set default if prayerNote is empty
+        prayerNote: user.prayerNote || "", // Set default if prayerNote is empty
         picture: user.picture,
         picturePreview: `data:image/jpeg;base64,${user.picture}`, // Display picture preview
       });
@@ -151,7 +162,7 @@ function UserList() {
       setShowUserList(false);  // Switch to the edit form
     } else {
       // If password does not match, show an error message
-      setErrorMessage('Incorrect password. Please try again.');
+      setErrorMessage('잘못된 비밀번호입니다.');
     }
   };
 
@@ -186,7 +197,7 @@ function UserList() {
         </>
       ) : (
         <>
-          <h3>{newUser.id ? "Edit User" : "Add New User"}</h3>
+          <h3>{newUser.id ? "수정" : "추가"}</h3>
           {newUser.picturePreview && (
                       <img
                         src={newUser.picturePreview}
@@ -197,8 +208,8 @@ function UserList() {
           <input
             type="text"
             id="name"
-            name="name"
-            placeholder="Name"
+            name="이름"
+            placeholder="이름"
             value={newUser.name}
             onChange={handleInputChange}
             required
@@ -206,8 +217,8 @@ function UserList() {
           <input
             type="text"
             id="phone"
-            name="phone"
-            placeholder="Phone (e.g., 01012345678)"
+            name="전화번호"
+            placeholder="전화번호 (e.g., 010-1234-5678)"
             value={newUser.phone}  // Prepopulate with current phone
             onChange={handleInputChange}
             required
@@ -215,8 +226,8 @@ function UserList() {
           <input
             type="text"
             id="prayerNote"
-            name="prayerNote"
-            placeholder="Prayer Note"
+            name="기도 제목"
+            placeholder="기도 제목"
             value={newUser.prayerNote}
             onChange={handleInputChange}
           />

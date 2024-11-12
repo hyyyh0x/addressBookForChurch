@@ -17,7 +17,7 @@ export const fetchAllUsers = async () => {
 const convertFileToBytes = (file) => {
   return new Promise((resolve, reject) => {
     if (!file) {
-      reject("No file provided");
+      reject("제공된 파일이 없습니다.");
       return;
     }
 
@@ -29,7 +29,7 @@ const convertFileToBytes = (file) => {
     });
 
     reader.addEventListener("error", () => {
-      reject("Failed to read file");
+      reject("파일을 읽어오는 데에 실패했습니다.");
     });
 
     reader.readAsArrayBuffer(file);
@@ -76,7 +76,7 @@ export const updateUser = async (userDTO) => {
     };
 
     // Send the PUT request with `userId` in the URL path and `phone` as a query parameter
-    const response = await axios.put(`/users/${userId}?phone=${userDTO.phone}`, userPayload);
+    const response = await axios.put(`/users/${userId}`, userPayload);
 
     return response.data;  // Return the updated user data
   } catch (error) {

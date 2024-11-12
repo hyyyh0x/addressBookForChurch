@@ -3,7 +3,9 @@ package addressBookForChurch.users.controller;
 import addressBookForChurch.users.dto.UserDTO;
 import addressBookForChurch.users.service.UserService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -21,6 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    @Value("${admin-password}")
+    private String adminPassword;
+
+    @GetMapping("/admin")
+    public Map<String, String> getAdminPhone() {
+        return Map.of("adminPassword", adminPassword);
+    }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> showAllUsers() {

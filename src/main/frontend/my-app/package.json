@@ -15,6 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "rd /s /q ..\\..\\resources\\static && xcopy /e /i build ..\\..\\resources\\static",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

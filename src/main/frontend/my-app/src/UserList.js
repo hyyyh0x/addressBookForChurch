@@ -103,12 +103,28 @@ function UserList() {
          // Create a link element to trigger the download
          const link = document.createElement('a');
          link.href = URL.createObjectURL(file);
-         link.download = 'UsersData.docx';  // Name the file with .docx extension for Word
-         link.click();  // Trigger the download
+         link.download = 'UsersData.docx';
+         link.click();
        } catch (error) {
          console.error('Error downloading file:', error);
        }
   };
+
+  const handleDownloadUser = async (userId) => {
+      try {
+        const response = await axios.get(`/download/${userId}`, {
+          responseType: 'arraybuffer',
+        });
+
+        const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(file);
+        link.download = `User_${userId}.docx`;
+        link.click();
+      } catch (error) {
+        console.error('Error downloading user document:', error);
+      }
+    };
 
   const handleUpdateUser = async () => {
     try {
@@ -173,27 +189,37 @@ function UserList() {
       )}
       {showUserList ? (
         <>
-          <h2>성도 리스트</h2>
+          <h2>성도 목록</h2>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {users.map((user) => (
+            <React.Fragment key={user.id}>
+            <hr/>
               <li key={user.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                 {user.picture && (
                   <img
                     src={`data:image/jpeg;base64,${user.picture}`}
                     alt="User"
-                    style={{ width: '50px', height: '50px', marginRight: '15px', borderRadius: '8px' }}
+                    style={{ width: '100px', height: '100px', marginRight: '15px', borderRadius: '8px' }}
                   />
                 )}
                 <div style={{ flex: 1 }}>
-                  <p><strong>Name:</strong> {user.name}</p>
-                  {user.prayerNote && <p><strong>Prayer Note:</strong> {user.prayerNote}</p>}
+                  <p><strong>이름</strong><br/> {user.name}</p>
+                  {user.prayerNote && (
+                            <p style={{ whiteSpace: 'pre-line' }}>
+                              <strong>기도제목</strong><br/> {user.prayerNote}
+                            </p>
+                          )}
                 </div>
-                <button onClick={() => handleEditUser(user)} style={{ marginLeft: '10px' }}>Edit</button>
+                <button onClick={() => handleEditUser(user)} style={{ marginLeft: '10px' }}>수정하기</button>
+                <button onClick={() => handleDownloadUser(user.id)} style={{ marginLeft: '10px' }}>성도 정보 다운</button>
               </li>
+              </React.Fragment>
             ))}
           </ul>
-          <button onClick={handleDownload}>Download Users List</button>
-          <button onClick={() => setShowUserList(false)}>Add New User</button>
+          <button onClick={() => setShowUserList(false)}>새 성도 추가하기</button>
+          <br/>
+          <br/>
+          <button onClick={handleDownload}>전체 성도 정보 다운로드하기</button>
         </>
       ) : (
         <>
@@ -219,28 +245,28 @@ function UserList() {
             id="phone"
             name="phone"
             placeholder="전화번호 (e.g., 010-1234-5678)"
-            value={newUser.phone}  // Prepopulate with current phone
+            value={newUser.phone}
             onChange={handleInputChange}
             required
           />
-          <input
-            type="text"
+          <textarea
             id="prayerNote"
             name="prayerNote"
             placeholder="기도 제목"
             value={newUser.prayerNote}
             onChange={handleInputChange}
+            rows={3}
           />
           <input type="file" id="picture" name="picture" onChange={handleFileChange} />
 
 
 
           {newUser.id ? (
-            <button onClick={handleUpdateUser}>Update User</button>
+            <button onClick={handleUpdateUser}>업데이트 하기</button>
           ) : (
-            <button onClick={handleSaveUser}>Save User</button>
+            <button onClick={handleSaveUser}>저장하기</button>
           )}
-          <button onClick={() => setShowUserList(true)}>Back to User List</button>
+          <button onClick={() => setShowUserList(true)}>성도 목록으로 돌아가기</button>
         </>
       )}
     </div>

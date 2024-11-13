@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,11 +35,11 @@ public class FileDownloadController {
         for (Users user : users) {
             var paragraph = document.createParagraph();
             var run = paragraph.createRun();
-            run.setText("Name: " + user.getName());
+            run.setText("이름: " + user.getName());
             run.addBreak();
-            run.setText("Phone: " + user.getPhone());
+            run.setText("전화번호: " + user.getPhone());
             run.addBreak();
-            run.setText("Prayer Note: " + user.getPrayerNote());
+            run.setText("기도 제목: " + user.getPrayerNote());
             run.addBreak();
             if (user.getPicture() != null) {
                 var imageRun = document.createParagraph().createRun();
@@ -50,6 +51,41 @@ public class FileDownloadController {
             }
             run.addBreak();
         }
+
+        document.write(out);
+        document.close();
+
+        // 파일 다운로드를 위한 HTTP 응답 생성
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UsersData.docx")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(out.toByteArray());
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<byte[]> downloadOneUserDoc(@PathVariable("userId") Long userId) throws IOException, InvalidFormatException {
+        // DOCX 파일 생성
+        Users user = usersRepository.findById(userId).orElseThrow();
+        XWPFDocument document = new XWPFDocument();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        var paragraph = document.createParagraph();
+        var run = paragraph.createRun();
+        run.setText("이름: " + user.getName());
+        run.addBreak();
+        run.setText("전화번호: " + user.getPhone());
+        run.addBreak();
+        run.setText("기도제목: " + user.getPrayerNote());
+        run.addBreak();
+        if (user.getPicture() != null) {
+            var imageRun = document.createParagraph().createRun();
+            imageRun.addPicture(new ByteArrayInputStream(user.getPicture()),
+                XWPFDocument.PICTURE_TYPE_JPEG,
+                "picture.jpg",
+                Units.toEMU(150),
+                Units.toEMU(150));
+        }
+        run.addBreak();
 
         document.write(out);
         document.close();

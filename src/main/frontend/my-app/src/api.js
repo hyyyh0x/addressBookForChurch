@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:8080';
-
 // Fetch all users
 export const fetchAllUsers = async () => {
   try {

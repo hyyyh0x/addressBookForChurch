@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAllUsers, createUser, updateUser } from './api';
 import axios from 'axios';
+
 function UserList() {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null });
   const [showUserList, setShowUserList] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
   const [enteredPassword, setEnteredPassword] = useState(''); // To store the entered password
   const [adminPassword, setAdminPassword] = useState('');
 
@@ -25,13 +27,18 @@ function UserList() {
   };
 
   const fetchAdminPassword = async () => {
-      try {
-        const response = await axios.get('/users/admin');
-        setAdminPassword(response.data.adminPassword);
-      } catch (error) {
-        console.error('Error fetching admin password:', error);
-      }
-    };
+    try {
+      const response = await axios.get('/users/admin');
+      setAdminPassword(response.data.adminPassword);
+    } catch (error) {
+      console.error('Error fetching admin password:', error);
+    }
+  };
+
+  const handleViewDetails = (user) => {
+    setSelectedUser(user); // Set the selected user to display details
+    setShowUserList(false); // Hide the user list
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,14 +110,14 @@ function UserList() {
          // Create a link element to trigger the download
          const link = document.createElement('a');
          link.href = URL.createObjectURL(file);
-         link.download = 'UsersData.docx';
+         link.download = 'UsersAllData.docx';
          link.click();
        } catch (error) {
          console.error('Error downloading file:', error);
        }
   };
 
-  const handleDownloadUser = async (userId) => {
+  const handleDownloadUser = async (userName, userId) => {
       try {
         const response = await axios.get(`/download/${userId}`, {
           responseType: 'arraybuffer',
@@ -119,7 +126,7 @@ function UserList() {
         const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(file);
-        link.download = `User_${userId}.docx`;
+        link.download = `User_${userName}.docx`;
         link.click();
       } catch (error) {
         console.error('Error downloading user document:', error);
@@ -194,7 +201,7 @@ function UserList() {
             {users.map((user) => (
             <React.Fragment key={user.id}>
             <hr/>
-              <li key={user.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+              <li key={user.id} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '20px', flexDirection: 'column'}}>
                 {user.picture && (
                   <img
                     src={`data:image/jpeg;base64,${user.picture}`}
@@ -205,23 +212,59 @@ function UserList() {
                 <div style={{ flex: 1 }}>
                   <p><strong>이름</strong><br/> {user.name}</p>
                   {user.prayerNote && (
-                            <p style={{ whiteSpace: 'pre-line' }}>
+                            <p style={{
+                                    whiteSpace: 'pre-line',
+                                    maxHeight: '100px',  // 최대 높이 설정
+                                    overflow: 'hidden',  // 넘치는 텍스트 숨김
+                                    textOverflow: 'ellipsis',  // 말줄임표
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 3,  // 보여줄 줄 수 제한
+                                    WebkitBoxOrient: 'vertical',
+                                  }}>
                               <strong>기도제목</strong><br/> {user.prayerNote}
                             </p>
                           )}
                 </div>
-                <button onClick={() => handleEditUser(user)} style={{ marginLeft: '10px' }}>수정하기</button>
-                <button onClick={() => handleDownloadUser(user.id)} style={{ marginLeft: '10px' }}>성도 정보 다운</button>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                  <button onClick={() => handleViewDetails(user)} style={{ marginRight: '10px' }}>자세히 보기</button>
+                  <button onClick={() => handleEditUser(user)} style={{ marginRight: '10px' }}>수정하기</button>
+                  <button onClick={() => handleDownloadUser(user.name, user.id)} style={{ marginRight: '10px' }}>성도 정보 다운</button>
+                </div>
               </li>
               </React.Fragment>
             ))}
           </ul>
-          <button onClick={() => setShowUserList(false)}>새 성도 추가하기</button>
+          <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
+          <button onClick={() => {
+            setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
+            setSelectedUser(null); // Reset selected user to ensure form shows
+            setShowUserList(false); // Hide user list to show form
+          }}>
+            새 성도 추가하기
+          </button>
           <br/>
           <br/>
           <button onClick={handleDownload}>전체 성도 정보 다운로드하기</button>
         </>
-      ) : (
+      ) : selectedUser ? (
+              <>
+                <h2>{selectedUser.name}</h2>
+                <div>
+                  {selectedUser.picture && (
+                    <img
+                      src={`data:image/jpeg;base64,${selectedUser.picture}`}
+                      alt="User"
+                      style={{ width: '150px', height: '150px', borderRadius: '8px', marginBottom: '10px' }}
+                    />
+                  )}
+                  <p><strong>이름</strong></p>
+                  <p>{selectedUser.name}</p>
+                  <p><strong>기도제목</strong></p>
+                  <p style={{ whiteSpace: 'pre-line' }}>{selectedUser.prayerNote}</p>
+                  <button onClick={() => setShowUserList(true)}>목록으로 돌아가기</button>
+                </div>
+              </>
+            ) : (
         <>
           <h3>{newUser.id ? "수정" : "추가"}</h3>
           {newUser.picturePreview && (
@@ -258,8 +301,6 @@ function UserList() {
             rows={3}
           />
           <input type="file" id="picture" name="picture" onChange={handleFileChange} />
-
-
 
           {newUser.id ? (
             <button onClick={handleUpdateUser}>업데이트 하기</button>

@@ -37,12 +37,6 @@ public class FileDownloadController {
         for (Users user : users) {
             var paragraph = document.createParagraph();
             var run = paragraph.createRun();
-            run.setText("이름: " + user.getName());
-            run.addBreak();
-            run.setText("전화번호: " + user.getPhone());
-            run.addBreak();
-            run.setText("기도 제목: " + user.getPrayerNote());
-            run.addBreak();
             if (user.getPicture() != null) {
                 var imageRun = document.createParagraph().createRun();
 
@@ -73,6 +67,12 @@ public class FileDownloadController {
                 );
             }
             run.addBreak();
+            run.setText("이름: " + user.getName());
+            run.addBreak();
+            run.setText("전화번호: " + user.getPhone());
+            run.addBreak();
+            run.setText("기도 제목: " + user.getPrayerNote());
+            run.addBreak();
         }
 
         document.write(out);
@@ -94,12 +94,6 @@ public class FileDownloadController {
 
         var paragraph = document.createParagraph();
         var run = paragraph.createRun();
-        run.setText("이름: " + user.getName());
-        run.addBreak();
-        run.setText("전화번호: " + user.getPhone());
-        run.addBreak();
-        run.setText("기도제목: " + user.getPrayerNote());
-        run.addBreak();
         if (user.getPicture() != null) {
             var imageRun = document.createParagraph().createRun();
 
@@ -129,6 +123,12 @@ public class FileDownloadController {
                 Units.toEMU(targetHeight)
             );
         }
+        run.addBreak();
+        run.setText("이름: " + user.getName());
+        run.addBreak();
+        run.setText("전화번호: " + user.getPhone());
+        run.addBreak();
+        run.setText("기도제목: " + user.getPrayerNote());
         run.addBreak();
 
         document.write(out);

@@ -1,8 +1,7 @@
 .user-list-container {
-  width: 100%; /* 기본적으로 전체 너비 사용 */
-  max-width: 400px;
+  width: 800px;
   height: 600px; /* 고정 높이 */
-  padding: 20px;
+  padding: 10px;
   background-color: #ffffff;
   border-radius: 10px;
   overflow-y: auto; /* 내용이 넘칠 경우 스크롤 생성 */
@@ -66,7 +65,7 @@
 .user-button {
   flex: 1;
   padding: 8px;
-  font-size: 0.85em;
+  font-size: 0.5em;
   background-color: #499C61;
   color: white;
   border: none;
@@ -172,21 +171,22 @@
 
 @media (max-width: 600px) {
   .user-list-container {
-      width: 90%; /* 화면에 맞게 너비 조정 */
-      height: 500px; /* 높이 조정 */
+      width: 600px; /* 화면에 맞게 너비 조정 */
+      height: 600px; /* 높이 조정 */
     }
+
   .user-list-header {
       font-size: 1.2em; /* 글꼴 크기를 작게 */
     }
 
     .user-button {
       padding: 8px; /* 버튼 크기 축소 */
-      font-size: 0.9em;
+      font-size: 0.5em;
     }
   }
   @media (min-width: 601px) {
     .user-list-container {
-      width: 400px;
+      width: 600px;
       height: 600px;
     }
 
@@ -196,6 +196,28 @@
 
     .user-button {
       padding: 10px;
-      font-size: 1em;
+      font-size: 0.5em;
+    }
+  }
+
+  @media (orientation: portrait) {
+    .user-list-container {
+      display: none; /* 세로 모드일 때 콘텐츠 숨기기 */
+    }
+
+    .rotate-message {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-size: 1.5em;
+      text-align: center;
+      padding: 20px;
+    }
+  }
+
+  @media (orientation: landscape) {
+    .rotate-message {
+      display: none; /* 가로 모드일 때 회전 요청 메시지 숨기기 */
     }
   }

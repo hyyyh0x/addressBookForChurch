@@ -1,14 +1,8 @@
 import axios from 'axios';
 
-// Fetch all users
-export const fetchAllUsers = async () => {
-  try {
-    const response = await axios.get('/users');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
-  }
+export const fetchAllUsers = async (page = 0, size = 10, search = '') => {
+  const response = await axios.get(`/users?page=${page}&size=${size}&search=${search}`);
+  return response.data;
 };
 
 // Convert file to byte array

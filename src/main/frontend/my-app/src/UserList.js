@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAllUsers, createUser, updateUser } from './api';
 import axios from 'axios';
+import './UserList.css';
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -10,16 +11,25 @@ function UserList() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [enteredPassword, setEnteredPassword] = useState(''); // To store the entered password
   const [adminPassword, setAdminPassword] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(5); // Set a default page size
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   useEffect(() => {
-      loadUsers();
-      fetchAdminPassword();
-    }, []);
+    loadUsers();
+    fetchAdminPassword();
+  }, [currentPage, searchQuery]);
 
   const loadUsers = async () => {
     try {
-      const usersData = await fetchAllUsers();
-      setUsers(usersData);
+      const usersData = await fetchAllUsers(currentPage, pageSize, searchQuery);
+      setUsers(usersData.content); // Assuming the server returns a Page object
+      setTotalPages(usersData.totalPages);
       setErrorMessage('');
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -32,6 +42,18 @@ function UserList() {
       setAdminPassword(response.data.adminPassword);
     } catch (error) {
       console.error('Error fetching admin password:', error);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -99,38 +121,52 @@ function UserList() {
   };
 
   const handleDownload = async () => {
-       try {
-         const response = await axios.get('/download', {
-           responseType: 'arraybuffer', // Ensure binary data is received
-         });
+       const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
 
-         // Create a Blob from the response data as a Word document
-         const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+       if (enteredPassword === adminPassword) {
+         try {
+           const response = await axios.get('/download', {
+             responseType: 'arraybuffer', // Ensure binary data is received
+           });
 
-         // Create a link element to trigger the download
-         const link = document.createElement('a');
-         link.href = URL.createObjectURL(file);
-         link.download = 'UsersAllData.docx';
-         link.click();
-       } catch (error) {
-         console.error('Error downloading file:', error);
-       }
+           // Create a Blob from the response data as a Word document
+           const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+           // Create a link element to trigger the download
+           const link = document.createElement('a');
+           link.href = URL.createObjectURL(file);
+           link.download = 'UsersAllData.docx';
+           link.click();
+           setErrorMessage('');
+         } catch (error) {
+           console.error('Error downloading file:', error);
+         }
+       } else {
+        setErrorMessage('잘못된 비밀번호입니다.');
+      }
   };
 
   const handleDownloadUser = async (userName, userId) => {
-      try {
-        const response = await axios.get(`/download/${userId}`, {
-          responseType: 'arraybuffer',
-        });
+      const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
 
-        const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(file);
-        link.download = `User_${userName}.docx`;
-        link.click();
-      } catch (error) {
-        console.error('Error downloading user document:', error);
-      }
+      if (enteredPassword === adminPassword) {
+        try {
+          const response = await axios.get(`/download/${userId}`, {
+            responseType: 'arraybuffer',
+          });
+
+          const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(file);
+          link.download = `User_${userName}.docx`;
+          link.click();
+          setErrorMessage('');
+        } catch (error) {
+          console.error('Error downloading user document:', error);
+        }
+      } else {
+         setErrorMessage('잘못된 비밀번호입니다.');
+       }
     };
 
   const handleUpdateUser = async () => {
@@ -190,26 +226,31 @@ function UserList() {
   };
 
   return (
-    <div>
-      {errorMessage && (
-        <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>
-      )}
+    <div className="user-list-container">
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       {showUserList ? (
         <>
-          <h2>성도 목록</h2>
+          <h2 className="user-list-header">성도 목록</h2>
+          <input
+                  type="text"
+                  placeholder="검색할 이름을 입력하세요"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="search-input"
+                />
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {users.map((user) => (
             <React.Fragment key={user.id}>
             <hr/>
-              <li key={user.id} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '20px', flexDirection: 'column'}}>
+              <li key={user.id} className="user-list-item">
                 {user.picture && (
                   <img
                     src={`data:image/jpeg;base64,${user.picture}`}
                     alt="User"
-                    style={{ width: '100px', height: '100px', marginRight: '15px', borderRadius: '8px' }}
+                    className="user-image"
                   />
                 )}
-                <div style={{ flex: 1 }}>
+                <div className="user-info">
                   <p><strong>이름</strong><br/> {user.name}</p>
                   {user.prayerNote && (
                             <p style={{
@@ -225,36 +266,40 @@ function UserList() {
                             </p>
                           )}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                  <button onClick={() => handleViewDetails(user)} style={{ marginRight: '10px' }}>자세히 보기</button>
-                  <button onClick={() => handleEditUser(user)} style={{ marginRight: '10px' }}>수정하기</button>
-                  <button onClick={() => handleDownloadUser(user.name, user.id)} style={{ marginRight: '10px' }}>성도 정보 다운</button>
+                 <div className="user-actions">
+                  <button onClick={() => handleViewDetails(user)} className="user-button">자세히 보기</button>
+                  <button onClick={() => handleEditUser(user)} className="user-button">수정하기</button>
+                  <button onClick={() => handleDownloadUser(user.name, user.id)} className="user-button">다운</button>
                 </div>
               </li>
               </React.Fragment>
             ))}
           </ul>
-          <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
+          <div className="pagination">
+            <button onClick={handlePreviousPage} disabled={currentPage === 0}>이전</button>
+            <span>{currentPage + 1} / {totalPages}</span>
+            <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>다음</button>
+          </div>
           <button onClick={() => {
             setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
             setSelectedUser(null); // Reset selected user to ensure form shows
             setShowUserList(false); // Hide user list to show form
-          }}>
+          }} className="add-user-button">
             새 성도 추가하기
           </button>
           <br/>
           <br/>
-          <button onClick={handleDownload}>전체 성도 정보 다운로드하기</button>
+          <button onClick={handleDownload} className="download-all-button">전체 성도 정보 다운로드하기</button>
         </>
       ) : selectedUser ? (
-              <>
+              <div className="user-details">
                 <h2>{selectedUser.name}</h2>
                 <div>
                   {selectedUser.picture && (
                     <img
                       src={`data:image/jpeg;base64,${selectedUser.picture}`}
                       alt="User"
-                      style={{ width: '150px', height: '150px', borderRadius: '8px', marginBottom: '10px' }}
+                      className = "user-image"
                     />
                   )}
                   <p><strong>이름</strong></p>
@@ -263,16 +308,15 @@ function UserList() {
                   <p style={{ whiteSpace: 'pre-line' }}>{selectedUser.prayerNote}</p>
                   <button onClick={() => setShowUserList(true)}>목록으로 돌아가기</button>
                 </div>
-              </>
+              </div>
             ) : (
-        <>
+        <div className="user-form">
           <h3>{newUser.id ? "수정" : "추가"}</h3>
           {newUser.picturePreview && (
                       <img
                         src={newUser.picturePreview}
                         alt="Preview"
-                        style={{ width: '100px', height: '100px', marginTop: '10px', borderRadius: '8px' }}
-                      />
+                        />
                     )}
           <input
             type="text"
@@ -308,7 +352,7 @@ function UserList() {
             <button onClick={handleSaveUser}>저장하기</button>
           )}
           <button onClick={() => setShowUserList(true)}>성도 목록으로 돌아가기</button>
-        </>
+        </div>
       )}
     </div>
   );

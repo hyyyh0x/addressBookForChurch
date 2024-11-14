@@ -1,0 +1,201 @@
+.user-list-container {
+  width: 100%; /* 기본적으로 전체 너비 사용 */
+  max-width: 400px;
+  height: 600px; /* 고정 높이 */
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 생성 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  font-size: 1em;
+}
+
+.user-list-header {
+  font-size: 1.5em;
+  color: #499C61;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.user-list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 8px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-image {
+  max-width: 100%; /* 부모 요소의 너비에 맞추어 조정 */
+  max-height: 100px; /* 최대 높이 제한 */
+  border-radius: 8px /* 둥근 모서리 */ !important;
+  object-fit: cover; /* 비율을 유지하면서 영역에 맞춤 */
+  margin-bottom: 15px;
+}
+
+.user-info p {
+  font-size: 0.95em;
+  color: #333;
+  text-align: center;
+  margin: 5px 0;
+}
+
+.user-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.user-button {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.85em;
+  background-color: #499C61;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+.user-button:hover {
+  background-color: #3d8653;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.add-user-button, .download-all-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #5a6268;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 1em;
+  cursor: pointer;
+}
+/* UserList.css */
+.user-details {
+  text-align: center;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-details img {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  object-fit: cover;
+}
+
+.user-details p {
+  margin: 10px 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-form img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  object-fit: cover;
+}
+
+.user-form input,
+.user-form textarea {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+}
+
+.user-form button {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  font-size: 1em;
+  color: white;
+  background-color: #499C61;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.user-form button:hover {
+  background-color: #524cd4;
+}
+
+@media (max-width: 600px) {
+  .user-list-container {
+      width: 90%; /* 화면에 맞게 너비 조정 */
+      height: 500px; /* 높이 조정 */
+    }
+  .user-list-header {
+      font-size: 1.2em; /* 글꼴 크기를 작게 */
+    }
+
+    .user-button {
+      padding: 8px; /* 버튼 크기 축소 */
+      font-size: 0.9em;
+    }
+  }
+  @media (min-width: 601px) {
+    .user-list-container {
+      width: 400px;
+      height: 600px;
+    }
+
+    .user-list-header {
+      font-size: 1.8em; /* 큰 화면에서는 더 큰 글꼴 크기 */
+    }
+
+    .user-button {
+      padding: 10px;
+      font-size: 1em;
+    }
+  }

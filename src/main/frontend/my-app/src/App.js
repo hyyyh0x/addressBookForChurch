@@ -1,17 +1,19 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import UserList from './UserList';
+import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div style={{ padding: '20px' }}>
-        <h1>서김해교회</h1>
-        <Routes>
-          <Route path="/" element={<UserList />} /> {/* Display UserList on the root path */}
-        </Routes>
-      </div>
-    </Router>
+    <div className="container">
+          <header className="header">
+            서김해교회
+          </header>
+          <UserList />
+          <footer className="footer">
+            © 2024 서김해교회 | 모든 권리 보유
+          </footer>
+        </div>
   );
 }
 

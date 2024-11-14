@@ -3,9 +3,13 @@ package addressBookForChurch.users.service;
 import addressBookForChurch.users.dto.UserDTO;
 import addressBookForChurch.users.entity.Users;
 import addressBookForChurch.users.repository.UsersRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -13,11 +17,18 @@ public class UserService {
 
     private final UsersRepository userRepository;
 
-    public List<UserDTO> getAllUsers() {
-        List<Users> users = userRepository.findAll();
-        return users.stream().map(
-            user -> new UserDTO(user.getId(), user.getName(), user.getPhone(), user.getPrayerNote(),
-                user.getPicture())).toList();
+    public Page<UserDTO> getAllUsers(Pageable pageable, String search) {
+        Page<Users> users;
+        if (StringUtils.hasText(search)) {
+            users = userRepository.findAllByName(search, pageable);
+        } else {
+            users = userRepository.findAll(
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by("name").ascending()));
+        }
+        return users.map(
+            user -> new UserDTO(user.getId(), user.getName(), user.getPhone(), user.getPrayerNote(), user.getPicture())
+        );
     }
 
     public UserDTO getUserById(Long userId) {

@@ -173,7 +173,7 @@
 
 @media (max-width: 600px) {
   .user-list-container {
-      width: 600px; /* 화면에 맞게 너비 조정 */
+      width: 800px; /* 화면에 맞게 너비 조정 */
       height: 600px; /* 높이 조정 */
     }
 
@@ -188,7 +188,7 @@
   }
   @media (min-width: 601px) {
     .user-list-container {
-      width: 600px;
+      width: 800px;
       height: 600px;
     }
 

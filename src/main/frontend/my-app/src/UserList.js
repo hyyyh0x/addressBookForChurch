@@ -3,7 +3,7 @@ import { fetchAllUsers, createUser, updateUser } from './api';
 import axios from 'axios';
 import './UserList.css';
 
-function UserList() {
+function UserList({searchQuery}) {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null });
   const [showUserList, setShowUserList] = useState(true);
@@ -15,11 +15,6 @@ function UserList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
 
    const handlePreviousPage = () => {
       if (currentPage > 0) {
@@ -55,6 +50,32 @@ const convertFileToBytes = (file) => {
       reader.readAsArrayBuffer(file);
     });
   };
+
+   const handleDownload = async () => {
+         const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
+
+         if (enteredPassword === adminPassword) {
+           try {
+             const response = await axios.get('/download', {
+               responseType: 'arraybuffer', // Ensure binary data is received
+             });
+
+             // Create a Blob from the response data as a Word document
+             const file = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+             // Create a link element to trigger the download
+             const link = document.createElement('a');
+             link.href = URL.createObjectURL(file);
+             link.download = 'UsersAllData.docx';
+             link.click();
+             setErrorMessage('');
+           } catch (error) {
+             console.error('Error downloading file:', error);
+           }
+         } else {
+          setErrorMessage('잘못된 비밀번호입니다.');
+        }
+    };
 
 const handleDownloadUser = async (userName, userId) => {
       const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
@@ -201,14 +222,7 @@ const handleDownloadUser = async (userName, userId) => {
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       {showUserList ? (
         <>
-          <h2 className="user-list-header">성도 목록</h2>
-          <input
-            type="text"
-            placeholder="검색할 이름을 입력하세요"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
+
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {users.map((user) => (
               <li key={user.id} className="user-list-item">
@@ -248,6 +262,18 @@ const handleDownloadUser = async (userName, userId) => {
                             <span>{currentPage + 1} / {totalPages}</span>
                             <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>다음</button>
                           </div>
+                          <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
+
+                                  <button onClick={() => {
+                                    setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
+                                    setSelectedUser(null); // Reset selected user to ensure form shows
+                                    setShowUserList(false); // Hide user list to show form
+                                  }}>
+                                    새 성도 추가하기
+                                  </button>
+                                  <br />
+                                  <br />
+                                  <button onClick={handleDownload}>전체 성도 정보 다운로드하기</button>
         </>
       ) : showDetails ? (
         <div className="user-details">

@@ -29,27 +29,23 @@ public class FileDownloadController {
 
     @GetMapping
     public ResponseEntity<byte[]> downloadUsersDoc() throws IOException, InvalidFormatException {
-        // DOCX 파일 생성
         List<Users> users = usersRepository.findAll();
         XWPFDocument document = new XWPFDocument();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         for (Users user : users) {
             var paragraph = document.createParagraph();
-            var run = paragraph.createRun();
-            if (user.getPicture() != null) {
-                var imageRun = document.createParagraph().createRun();
 
-                // ByteArrayInputStream을 통해 이미지 데이터를 읽어와 원본 크기 가져오기
+            // 이미지가 있을 경우 먼저 추가
+            if (user.getPicture() != null) {
+                var imageRun = paragraph.createRun();
                 ByteArrayInputStream pictureInputStream = new ByteArrayInputStream(user.getPicture());
                 BufferedImage bufferedImage = ImageIO.read(pictureInputStream);
 
                 int originalWidth = bufferedImage.getWidth();
                 int originalHeight = bufferedImage.getHeight();
-
-                // 비율을 유지하면서 최대 크기 조정
-                int targetWidth = 150;  // 원하는 최대 너비 (px)
-                int targetHeight = 150; // 원하는 최대 높이 (px)
+                int targetWidth = 150;
+                int targetHeight = 150;
 
                 if (originalWidth > originalHeight) {
                     targetHeight = (int) ((double) originalHeight / originalWidth * targetWidth);
@@ -57,7 +53,6 @@ public class FileDownloadController {
                     targetWidth = (int) ((double) originalWidth / originalHeight * targetHeight);
                 }
 
-                // 조정된 크기로 이미지 추가
                 imageRun.addPicture(
                     new ByteArrayInputStream(user.getPicture()),
                     XWPFDocument.PICTURE_TYPE_JPEG,
@@ -65,8 +60,11 @@ public class FileDownloadController {
                     Units.toEMU(targetWidth),
                     Units.toEMU(targetHeight)
                 );
+                imageRun.addBreak();
             }
-            run.addBreak();
+
+            // 이름, 전화번호, 기도 제목을 차례로 추가
+            var run = paragraph.createRun();
             run.setText("이름: " + user.getName());
             run.addBreak();
             run.setText("전화번호: " + user.getPhone());
@@ -78,7 +76,6 @@ public class FileDownloadController {
         document.write(out);
         document.close();
 
-        // 파일 다운로드를 위한 HTTP 응답 생성
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UsersData.docx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -87,26 +84,22 @@ public class FileDownloadController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<byte[]> downloadOneUserDoc(@PathVariable("userId") Long userId) throws IOException, InvalidFormatException {
-        // DOCX 파일 생성
         Users user = usersRepository.findById(userId).orElseThrow();
         XWPFDocument document = new XWPFDocument();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         var paragraph = document.createParagraph();
-        var run = paragraph.createRun();
-        if (user.getPicture() != null) {
-            var imageRun = document.createParagraph().createRun();
 
-            // ByteArrayInputStream을 통해 이미지 데이터를 읽어와 원본 크기 가져오기
+        // 이미지가 있을 경우 먼저 추가
+        if (user.getPicture() != null) {
+            var imageRun = paragraph.createRun();
             ByteArrayInputStream pictureInputStream = new ByteArrayInputStream(user.getPicture());
             BufferedImage bufferedImage = ImageIO.read(pictureInputStream);
 
             int originalWidth = bufferedImage.getWidth();
             int originalHeight = bufferedImage.getHeight();
-
-            // 비율을 유지하면서 최대 크기 조정
-            int targetWidth = 150;  // 원하는 최대 너비 (px)
-            int targetHeight = 150; // 원하는 최대 높이 (px)
+            int targetWidth = 150;
+            int targetHeight = 150;
 
             if (originalWidth > originalHeight) {
                 targetHeight = (int) ((double) originalHeight / originalWidth * targetWidth);
@@ -114,7 +107,6 @@ public class FileDownloadController {
                 targetWidth = (int) ((double) originalWidth / originalHeight * targetHeight);
             }
 
-            // 조정된 크기로 이미지 추가
             imageRun.addPicture(
                 new ByteArrayInputStream(user.getPicture()),
                 XWPFDocument.PICTURE_TYPE_JPEG,
@@ -122,8 +114,11 @@ public class FileDownloadController {
                 Units.toEMU(targetWidth),
                 Units.toEMU(targetHeight)
             );
+            imageRun.addBreak();
         }
-        run.addBreak();
+
+        // 이름, 전화번호, 기도 제목을 차례로 추가
+        var run = paragraph.createRun();
         run.setText("이름: " + user.getName());
         run.addBreak();
         run.setText("전화번호: " + user.getPhone());
@@ -134,9 +129,8 @@ public class FileDownloadController {
         document.write(out);
         document.close();
 
-        // 파일 다운로드를 위한 HTTP 응답 생성
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UsersData.docx")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UserData_" + user.getId() + ".docx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(out.toByteArray());
     }

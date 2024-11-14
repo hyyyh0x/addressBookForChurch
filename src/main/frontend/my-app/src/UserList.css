@@ -16,11 +16,13 @@
 
 .search-input {
   width: 100%;
+  max-width: 400px; /* Limit the max width */
   padding: 12px;
   border-radius: 20px;
   border: 1px solid #ddd;
-  margin-bottom: 15px;
+  margin: 0 auto 15px; /* Center-align by using auto for left and right margins */
   font-size: 1em;
+  display: block; /* Ensures it takes up full width in the center */
 }
 
 .user-list-header {

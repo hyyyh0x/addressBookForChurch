@@ -2,10 +2,12 @@ package addressBookForChurch;
 
 import addressBookForChurch.users.entity.Users;
 import addressBookForChurch.users.repository.UsersRepository;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
@@ -43,11 +45,32 @@ public class FileDownloadController {
             run.addBreak();
             if (user.getPicture() != null) {
                 var imageRun = document.createParagraph().createRun();
-                imageRun.addPicture(new ByteArrayInputStream(user.getPicture()),
+
+                // ByteArrayInputStream을 통해 이미지 데이터를 읽어와 원본 크기 가져오기
+                ByteArrayInputStream pictureInputStream = new ByteArrayInputStream(user.getPicture());
+                BufferedImage bufferedImage = ImageIO.read(pictureInputStream);
+
+                int originalWidth = bufferedImage.getWidth();
+                int originalHeight = bufferedImage.getHeight();
+
+                // 비율을 유지하면서 최대 크기 조정
+                int targetWidth = 150;  // 원하는 최대 너비 (px)
+                int targetHeight = 150; // 원하는 최대 높이 (px)
+
+                if (originalWidth > originalHeight) {
+                    targetHeight = (int) ((double) originalHeight / originalWidth * targetWidth);
+                } else {
+                    targetWidth = (int) ((double) originalWidth / originalHeight * targetHeight);
+                }
+
+                // 조정된 크기로 이미지 추가
+                imageRun.addPicture(
+                    new ByteArrayInputStream(user.getPicture()),
                     XWPFDocument.PICTURE_TYPE_JPEG,
                     "picture.jpg",
-                    Units.toEMU(150),
-                    Units.toEMU(150));
+                    Units.toEMU(targetWidth),
+                    Units.toEMU(targetHeight)
+                );
             }
             run.addBreak();
         }

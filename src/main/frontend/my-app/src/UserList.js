@@ -217,7 +217,6 @@ const handleDownloadUser = async (userName, userId) => {
 
   return (
   <div>
-  <div className="rotate-message">가로 모드로 회전하여 이용해 주세요.</div>
     <div className="user-list-container">
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       {showUserList ? (
@@ -268,6 +267,8 @@ const handleDownloadUser = async (userName, userId) => {
                                     setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
                                     setSelectedUser(null); // Reset selected user to ensure form shows
                                     setShowUserList(false); // Hide user list to show form
+                                    setShowDetails(false); // Ensure details view is hidden
+                                    setEditMode(true); // Enable edit mode to display the form
                                   }}>
                                     새 성도 추가하기
                                   </button>

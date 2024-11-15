@@ -173,9 +173,10 @@
 
 @media (max-width: 600px) {
   .user-list-container {
-      width: 800px; /* 화면에 맞게 너비 조정 */
-      height: 600px; /* 높이 조정 */
-    }
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Scroll vertically if content overflows */
+  }
 
   .user-list-header {
       font-size: 1.2em; /* 글꼴 크기를 작게 */
@@ -199,27 +200,5 @@
     .user-button {
       padding: 10px;
       font-size: 0.5em;
-    }
-  }
-
-  @media (orientation: portrait) {
-    .user-list-container {
-      display: none; /* 세로 모드일 때 콘텐츠 숨기기 */
-    }
-
-    .rotate-message {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-size: 1.5em;
-      text-align: center;
-      padding: 20px;
-    }
-  }
-
-  @media (orientation: landscape) {
-    .rotate-message {
-      display: none; /* 가로 모드일 때 회전 요청 메시지 숨기기 */
     }
   }

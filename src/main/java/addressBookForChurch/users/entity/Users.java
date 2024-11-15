@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -35,8 +34,7 @@ public class Users {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    @Pattern(regexp = "010-?\\d{4}-?\\d{4}")
+    @Column(nullable = false)
     private String phone;
 
     @Lob

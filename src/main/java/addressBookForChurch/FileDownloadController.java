@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,14 +64,30 @@ public class FileDownloadController {
                 imageRun.addBreak();
             }
 
-            // 이름, 전화번호, 기도 제목을 차례로 추가
-            var run = paragraph.createRun();
-            run.setText("이름: " + user.getName());
-            run.addBreak();
-            run.setText("전화번호: " + user.getPhone());
-            run.addBreak();
-            run.setText("기도 제목: " + user.getPrayerNote());
-            run.addBreak();
+            XWPFRun boldRun = paragraph.createRun();
+            boldRun.setBold(true);
+            boldRun.setText("이름: ");
+            boldRun.addBreak();
+
+            XWPFRun normalRun = paragraph.createRun();
+            normalRun.setBold(false);
+            normalRun.setText(user.getName());
+            normalRun.addBreak();
+
+            XWPFRun boldRunPrayer = paragraph.createRun();
+            boldRunPrayer.setBold(true);
+            boldRunPrayer.setText("기도제목: ");
+            boldRunPrayer.addBreak();
+
+            if (user.getPrayerNote() != null) {
+                String[] lines = user.getPrayerNote().split("\n");
+                for (String line : lines) {
+                    XWPFRun prayerRun = paragraph.createRun();
+                    prayerRun.setBold(false);
+                    prayerRun.setText(line);
+                    prayerRun.addBreak();
+                }
+            }
         }
 
         document.write(out);
@@ -117,15 +134,30 @@ public class FileDownloadController {
             imageRun.addBreak();
         }
 
-        // 이름, 전화번호, 기도 제목을 차례로 추가
-        var run = paragraph.createRun();
-        run.setText("이름: " + user.getName());
-        run.addBreak();
-        run.setText("전화번호: " + user.getPhone());
-        run.addBreak();
-        run.setText("기도제목: " + user.getPrayerNote());
-        run.addBreak();
+        XWPFRun boldRun = paragraph.createRun();
+        boldRun.setBold(true);
+        boldRun.setText("이름: ");
+        boldRun.addBreak();
 
+        XWPFRun normalRun = paragraph.createRun();
+        normalRun.setBold(false);
+        normalRun.setText(user.getName());
+        normalRun.addBreak();
+
+        XWPFRun boldRunPrayer = paragraph.createRun();
+        boldRunPrayer.setBold(true);
+        boldRunPrayer.setText("기도제목: ");
+        boldRunPrayer.addBreak();
+
+        if (user.getPrayerNote() != null) {
+            String[] lines = user.getPrayerNote().split("\n");
+            for (String line : lines) {
+                XWPFRun prayerRun = paragraph.createRun();
+                prayerRun.setBold(false);
+                prayerRun.setText(line);
+                prayerRun.addBreak();
+            }
+        }
         document.write(out);
         document.close();
 

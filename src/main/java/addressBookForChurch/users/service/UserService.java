@@ -39,8 +39,8 @@ public class UserService {
     }
 
     public UserDTO createUser(UserDTO userDTO) {
-        if(userRepository.existsByPhone(userDTO.phone())){
-            throw new IllegalArgumentException("있는 전화번호입니다.");
+        if(userRepository.existsByPhoneAndName(userDTO.phone(), userDTO.name())){
+            throw new IllegalArgumentException("존재하는 사람입니다.");
         }
         Users users = new Users(userDTO.name(), userDTO.phone(), userDTO.prayerNote(),
             userDTO.picture());
@@ -50,8 +50,8 @@ public class UserService {
     }
 
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
-        if(userRepository.existsByPhoneAndIdNot(userDTO.phone(), userId)){
-            throw new IllegalArgumentException("있는 전화번호입니다.");
+        if(userRepository.existsByPhoneAndNameAndIdNot(userDTO.phone(), userDTO.name(), userId)){
+            throw new IllegalArgumentException("존재하는 사람입니다.");
         }
         Users users = userRepository.findById(userId).orElseThrow();
         users.update(userDTO.name(), userDTO.phone(), userDTO.prayerNote(), userDTO.picture());

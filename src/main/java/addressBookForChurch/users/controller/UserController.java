@@ -47,6 +47,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        System.out.println("Prayer Note: " + userDTO.prayerNote());
         return ResponseEntity.ok(userService.createUser(userDTO));
     }
 

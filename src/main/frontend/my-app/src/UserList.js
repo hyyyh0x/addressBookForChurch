@@ -64,7 +64,7 @@ const convertFileToBytes = (file) => {
   };
 
    const handleDownload = async () => {
-         const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
+         const enteredPassword = prompt('관리자 비밀번호를 입력해주세요.');
 
          if (enteredPassword === adminPassword) {
            try {
@@ -85,12 +85,12 @@ const convertFileToBytes = (file) => {
              console.error('Error downloading file:', error);
            }
          } else {
-          setErrorMessage('잘못된 비밀번호입니다.');
+          setErrorMessage('잘못된 비밀번호입니다. 관리자만 이용가능합니다.');
         }
     };
 
 const handleDownloadUser = async (userName, userId) => {
-      const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
+      const enteredPassword = prompt('관리자 비밀번호를 입력해주세요.');
 
       if (enteredPassword === adminPassword) {
         try {
@@ -108,7 +108,7 @@ const handleDownloadUser = async (userName, userId) => {
           console.error('Error downloading user document:', error);
         }
       } else {
-         setErrorMessage('잘못된 비밀번호입니다.');
+         setErrorMessage('잘못된 비밀번호입니다. 관리자만 이용 가능합니다.');
        }
     };
 
@@ -178,7 +178,7 @@ const handleDownloadUser = async (userName, userId) => {
   };
 
   const handleEditUser = (user) => {
-    const enteredPassword = prompt('비밀번호(전화번호)를 입력해주세요.');
+    const enteredPassword = prompt('비밀번호(전화번호 뒷 4자리)를 입력해주세요.');
     if (enteredPassword === user.phone || enteredPassword === adminPassword) {
       setNewUser({
         id: user.id,
@@ -269,24 +269,24 @@ const handleDownloadUser = async (userName, userId) => {
             ))}
           </ul>
           <div className="pagination">
-                            <button onClick={handlePreviousPage} disabled={currentPage === 0} className="user-button-pagination">이전</button>
-                            <span>{currentPage + 1} / {totalPages}</span>
-                            <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1} className="user-button-pagination">다음</button>
-                          </div>
-                          <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
+            <button onClick={handlePreviousPage} disabled={currentPage === 0} className="user-button-pagination">이전</button>
+            <span>{currentPage + 1} / {totalPages}</span>
+            <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1} className="user-button-pagination">다음</button>
+          </div>
+          <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
 
-                                  <button onClick={() => {
-                                    setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
-                                    setSelectedUser(null); // Reset selected user to ensure form shows
-                                    setShowUserList(false); // Hide user list to show form
-                                    setShowDetails(false); // Ensure details view is hidden
-                                    setEditMode(true); // Enable edit mode to display the form
-                                  }} className="user-button">
-                                    새 성도 추가하기
-                                  </button>
-                                  <br />
-                                  <br />
-                                  <button onClick={handleDownload} className="user-button">전체 성도 정보 다운로드하기</button>
+          <button onClick={() => {
+            setNewUser({ name: '', phone: '', prayerNote: '', picture: null, picturePreview: null }); // Reset form fields
+            setSelectedUser(null); // Reset selected user to ensure form shows
+            setShowUserList(false); // Hide user list to show form
+            setShowDetails(false); // Ensure details view is hidden
+            setEditMode(true); // Enable edit mode to display the form
+          }} className="user-button">
+            새 성도 추가하기
+          </button>
+          <br />
+          <br />
+          <button onClick={handleDownload} className="user-button">전체 성도 정보 다운로드하기</button>
         </>
       ) : showDetails && selectedUser ? (
         <div className="user-details">
@@ -304,7 +304,7 @@ const handleDownloadUser = async (userName, userId) => {
             <p>{selectedUser.name}</p>
             <p><strong>기도제목</strong></p>
             <p style={{ whiteSpace: 'pre-line' }}>{selectedUser.prayerNote}</p>
-            <button onClick={() => setShowUserList(true)}>목록으로 돌아가기</button>
+            <button onClick={() => setShowUserList(true)} className="user-button">목록으로 돌아가기</button>
           </div>
         </div>
       ) : editMode ? (
@@ -326,7 +326,7 @@ const handleDownloadUser = async (userName, userId) => {
             type="text"
             id="phone"
             name="phone"
-            placeholder="전화번호 (e.g., 010-1234-5678)"
+            placeholder="비밀번호 (e.g. 1234 전화번호 뒷 4자리 권장)"
             value={newUser.phone}
             onChange={handleInputChange}
             required

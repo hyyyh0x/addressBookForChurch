@@ -15,6 +15,18 @@ function UserList({searchQuery}) {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImageClick = (imageSrc) => {
+      setSelectedImage(imageSrc);
+      setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+      setIsModalOpen(false);
+      setSelectedImage(null);
+    };
 
    const handlePreviousPage = () => {
       if (currentPage > 0) {
@@ -276,7 +288,7 @@ const handleDownloadUser = async (userName, userId) => {
                                   <br />
                                   <button onClick={handleDownload} className="user-button">전체 성도 정보 다운로드하기</button>
         </>
-      ) : showDetails ? (
+      ) : showDetails && selectedUser ? (
         <div className="user-details">
           <h2>{selectedUser.name}</h2>
           <div>
@@ -285,6 +297,7 @@ const handleDownloadUser = async (userName, userId) => {
                 src={`data:image/jpeg;base64,${selectedUser.picture}`}
                 alt="User"
                 className="user-image"
+                onClick={() => handleImageClick(`data:image/jpeg;base64,${selectedUser.picture}`)}
               />
             )}
             <p><strong>이름</strong></p>
@@ -336,8 +349,16 @@ const handleDownloadUser = async (userName, userId) => {
         </div>
       ) : null}
     </div>
-    </div>
-  );
+    {isModalOpen && (
+          <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="close-button" onClick={closeModal}>X</button>
+              <img src={selectedImage} alt="Enlarged User" />
+            </div>
+          </div>
+        )}
+      </div>
+      );
 }
 
 export default UserList;

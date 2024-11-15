@@ -1,11 +1,12 @@
 .user-list-container {
-  width: 800px;
-  height: 600px; /* 고정 높이 */
+  width: calc(100vw - [header/footer weight]);
   padding: 10px;
   background-color: #ffffff;
   border-radius: 10px;
   overflow-y: auto; /* 내용이 넘칠 경우 스크롤 생성 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  height: calc(100vh - [header/footer height]);
 }
 
 .error-message {
@@ -66,8 +67,8 @@
 
 .user-button {
   flex: 1;
-  padding: 8px;
-  font-size: 0.5em;
+  padding: 6px 20px;
+  font-size: 0.8em;
   background-color: #499C61;
   color: white;
   border: none;
@@ -171,6 +172,40 @@
   background-color: #524cd4;
 }
 
+.pagination button {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: 2px solid #4CAF50; /* Green border color */
+  background-color: white; /* White background */
+  color: #4CAF50; /* Green text color */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.pagination button:disabled {
+  color: #ccc; /* Gray text for disabled buttons */
+  border-color: #ccc; /* Gray border for disabled buttons */
+  cursor: not-allowed; /* Disable pointer on disabled button */
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #4CAF50; /* Green background on hover */
+  color: white; /* White text on hover */
+}
+
+.user-info .prayer-note {
+  white-space: pre-line;
+  max-width: 600px; /* Limit width for readability */
+  color: #555;
+  font-size: 14px;
+  overflow: hidden; /* Hide overflowing text */
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Display only 3 lines */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis; /* Add ellipsis (...) */
+}
+
 @media (max-width: 600px) {
   .user-list-container {
     width: 100vw; /* Full viewport width */
@@ -183,14 +218,17 @@
     }
 
     .user-button {
-      padding: 8px; /* 버튼 크기 축소 */
-      font-size: 0.5em;
+      padding: 6px 16px; /* 버튼 크기 축소 */
+      font-size: 1em;
+      min-width: 80px;
     }
   }
+
   @media (min-width: 601px) {
     .user-list-container {
-      width: 800px;
-      height: 600px;
+      width: 100vw; /* Full viewport width */
+          height: 100vh; /* Full viewport height */
+          overflow-y: auto; /* Scroll vertically if content overflows */
     }
 
     .user-list-header {
@@ -198,7 +236,8 @@
     }
 
     .user-button {
-      padding: 10px;
-      font-size: 0.5em;
+      padding: 6px 16px;
+      min-width: 80px;
+      font-size: 1em;
     }
   }

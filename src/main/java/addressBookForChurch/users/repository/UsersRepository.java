@@ -9,5 +9,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     boolean existsByPhone(String phone);
     boolean existsByPhoneAndIdNot(String phone, Long id);
     Page<Users> findAll(Pageable pageable);
-    Page<Users> findAllByName(String name, Pageable pageable);
+    Page<Users> findAllByNameContaining(String name, Pageable pageable);
 }

@@ -20,7 +20,7 @@ public class UserService {
     public Page<UserDTO> getAllUsers(Pageable pageable, String search) {
         Page<Users> users;
         if (StringUtils.hasText(search)) {
-            users = userRepository.findAllByName(search, pageable);
+            users = userRepository.findAllByNameContaining(search, pageable);
         } else {
             users = userRepository.findAll(
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),

@@ -257,9 +257,9 @@ const handleDownloadUser = async (userName, userId) => {
             ))}
           </ul>
           <div className="pagination">
-                            <button onClick={handlePreviousPage} disabled={currentPage === 0}>이전</button>
+                            <button onClick={handlePreviousPage} disabled={currentPage === 0} className="user-button-pagination">이전</button>
                             <span>{currentPage + 1} / {totalPages}</span>
-                            <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>다음</button>
+                            <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1} className="user-button-pagination">다음</button>
                           </div>
                           <hr style={{ width: '100%', border: '1px solid #ccc', margin: '20px 0' }} />
 
@@ -269,12 +269,12 @@ const handleDownloadUser = async (userName, userId) => {
                                     setShowUserList(false); // Hide user list to show form
                                     setShowDetails(false); // Ensure details view is hidden
                                     setEditMode(true); // Enable edit mode to display the form
-                                  }}>
+                                  }} className="user-button">
                                     새 성도 추가하기
                                   </button>
                                   <br />
                                   <br />
-                                  <button onClick={handleDownload}>전체 성도 정보 다운로드하기</button>
+                                  <button onClick={handleDownload} className="user-button">전체 성도 정보 다운로드하기</button>
         </>
       ) : showDetails ? (
         <div className="user-details">
@@ -328,11 +328,11 @@ const handleDownloadUser = async (userName, userId) => {
           />
           <input type="file" id="picture" name="picture" onChange={handleFileChange} />
           {newUser.id ? (
-            <button onClick={handleUpdateUser}>업데이트 하기</button>
+            <button onClick={handleUpdateUser} className="user-button">업데이트 하기</button>
           ) : (
-            <button onClick={handleSaveUser}>저장하기</button>
+            <button onClick={handleSaveUser} className="user-button">저장하기</button>
           )}
-          <button onClick={() => { setShowUserList(true); setEditMode(false); }}>성도 목록으로 돌아가기</button>
+          <button onClick={() => { setShowUserList(true); setEditMode(false); }} className="user-button">성도 목록으로 돌아가기</button>
         </div>
       ) : null}
     </div>
